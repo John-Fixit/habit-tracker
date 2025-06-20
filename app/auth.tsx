@@ -6,8 +6,10 @@ import { Button, Text, TextInput, useTheme } from "react-native-paper";
 
 export default function AuthScreen() {
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
+  const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
   const [error, setError] = useState<string | null>("");
 
   const { signIn, signUp } = useAuth();
@@ -21,6 +23,10 @@ export default function AuthScreen() {
   };
 
   const handleAuth = async () => {
+    if ((isSignUp && !email) || !password || !name) {
+      setError("Please fill all fields");
+      return;
+    }
     if (!email || !password) {
       setError("Please fill all fields");
       return;
@@ -31,7 +37,7 @@ export default function AuthScreen() {
     }
     setError(null);
     if (isSignUp) {
-      const error = await signUp(email, password);
+      const error = await signUp(name, email, phone, password);
       if (error) {
         setError(error);
         return;
@@ -54,7 +60,16 @@ export default function AuthScreen() {
         <Text style={styles.title} variant="headlineMedium">
           {isSignUp ? "Create Account" : "Welcome back"}
         </Text>
-
+        {isSignUp && (
+          <TextInput
+            placeholder="Enter your Name"
+            keyboardType="default"
+            label="Name"
+            mode="outlined"
+            style={styles.input}
+            onChangeText={setName}
+          />
+        )}
         <TextInput
           placeholder="Enter your email"
           keyboardType="email-address"
@@ -64,6 +79,14 @@ export default function AuthScreen() {
           style={styles.input}
           onChangeText={setEmail}
         />
+        {/* <TextInput
+          placeholder="Enter Phone Number"
+          keyboardType="number-pad"
+          label="Phone Number"
+          mode="outlined"
+          style={styles.input}
+          onChangeText={setPhone}
+        /> */}
         <TextInput
           placeholder="Enter password"
           secureTextEntry
@@ -113,5 +136,6 @@ const styles = StyleSheet.create({
   },
   switchModeButton: {
     marginTop: 16,
+    cursor: "pointer",
   },
 });

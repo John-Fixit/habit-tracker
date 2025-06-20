@@ -5,7 +5,12 @@ import { account } from "./appwrite";
 type AuthContextType = {
   user: Models.User<Models.Preferences> | null;
   isLoadingUser: boolean;
-  signUp: (email: string, password: string) => Promise<string | null>;
+  signUp: (
+    name: string,
+    email: string,
+    phone: string,
+    password: string
+  ) => Promise<string | null>;
   signIn: (email: string, password: string) => Promise<string | null>;
   signOut: () => Promise<void>;
 };
@@ -36,9 +41,14 @@ export default function AuthProvider({
       setIsLoadingUser(false);
     }
   };
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (
+    name: string,
+    email: string,
+    phone: string,
+    password: string
+  ) => {
     try {
-      await account.create(ID.unique(), email, password);
+      await account.create(ID.unique(), email, password, name);
       signIn(email, password);
       return null;
     } catch (error) {
